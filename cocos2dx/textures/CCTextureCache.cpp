@@ -2,6 +2,7 @@
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) Microsoft Open Technologies, Inc.
 
 http://www.cocos2d-x.org
 
@@ -41,7 +42,12 @@ THE SOFTWARE.
 #include <cctype>
 #include <queue>
 #include <list>
+
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
 #include <pthread.h>
+#else
+#include "CCWinRTUtils.h"
+#endif
 
 using namespace std;
 
@@ -61,6 +67,8 @@ typedef struct _ImageInfo
     CCImage::EImageFormat imageType;
 } ImageInfo;
 
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
+
 static pthread_t s_loadingThread;
 
 static pthread_mutex_t		s_SleepMutex;
@@ -75,6 +83,8 @@ static unsigned long s_nAsyncRefCount = 0;
 static bool need_quit = false;
 
 static std::queue<AsyncStruct*>* s_pAsyncStructQueue = NULL;
+#endif
+
 static std::queue<ImageInfo*>*   s_pImageQueue = NULL;
 
 static CCImage::EImageFormat computeImageFormatType(string& filename)
@@ -93,13 +103,17 @@ static CCImage::EImageFormat computeImageFormatType(string& filename)
     {
         ret = CCImage::kFmtTiff;
     }
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
     else if ((std::string::npos != filename.find(".webp")) || (std::string::npos != filename.find(".WEBP")))
     {
         ret = CCImage::kFmtWebp;
     }
+#endif
    
     return ret;
 }
+
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
 
 static void* loadImage(void* data)
 {
@@ -179,6 +193,7 @@ static void* loadImage(void* data)
     
     return 0;
 }
+#endif
 
 // implementation CCTextureCache
 
@@ -204,9 +219,10 @@ CCTextureCache::CCTextureCache()
 CCTextureCache::~CCTextureCache()
 {
     CCLOGINFO("cocos2d: deallocing CCTextureCache.");
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
     need_quit = true;
-
     pthread_cond_signal(&s_SleepCondition);
+#endif
     CC_SAFE_RELEASE(m_pTextures);
 }
 
@@ -234,17 +250,17 @@ CCDictionary* CCTextureCache::snapshotTextures()
 void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallFuncO selector)
 {
     CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");    
-
     CCTexture2D *texture = NULL;
 
-    // optimization
-
     std::string pathKey = path;
-
     pathKey = CCFileUtils::sharedFileUtils()->fullPathForFilename(pathKey.c_str());
+	std::replace( pathKey.begin(), pathKey.end(), '/', '\\'); 
+
     texture = (CCTexture2D*)m_pTextures->objectForKey(pathKey.c_str());
 
     std::string fullpath = pathKey;
+
+
     if (texture != NULL)
     {
         if (target && selector)
@@ -255,6 +271,54 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
         return;
     }
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+	Platform::String^ p = ref new Platform::String(CCUtf8ToUnicode(pathKey.c_str()).c_str());
+	
+	auto readTask = ReadDataAsync(p);
+	readTask.then([this, target, selector, path](Platform::Array<byte>^ fileData) {
+		do
+		{
+			// compute image type
+			CCImage::EImageFormat imageType = computeImageFormatType(std::string(path));
+			if (imageType == CCImage::kFmtUnKnown)
+			{
+				CCLOG("unsupported format %s",filename);
+
+				continue;
+			}
+
+			// generate image            
+			CCImage *pImage = new CCImage();
+			if (pImage && !pImage->initWithImageFileThreadSafe(path, imageType))
+			{
+				CC_SAFE_RELEASE(pImage);
+				CCLOG("can not load %s", filename);
+				continue;
+			}
+
+			// generate texture in render thread
+			CCTexture2D *texture = new CCTexture2D();
+			texture->initWithImage(pImage);
+
+#if CC_ENABLE_CACHE_TEXTURE_DATA
+			// cache the texture file name
+			VolatileTexture::addImageTexture(texture, filename, pImageInfo->imageType);
+#endif
+
+			// cache the texture
+			m_pTextures->setObject(texture, path);
+			texture->autorelease();
+
+			if (target && selector)
+			{
+				(target->*selector)(texture);
+			}        
+
+			pImage->release();
+		} while(0);
+	});  
+
+#else
     // lazy init
     if (s_pAsyncStructQueue == NULL)
     {             
@@ -294,7 +358,10 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     pthread_mutex_unlock(&s_asyncStructQueueMutex);
 
     pthread_cond_signal(&s_SleepCondition);
+#endif
 }
+
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
 
 void CCTextureCache::addImageAsyncCallBack(float dt)
 {
@@ -353,6 +420,7 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
         }
     }
 }
+#endif
 
 CCTexture2D * CCTextureCache::addImage(const char * path)
 {

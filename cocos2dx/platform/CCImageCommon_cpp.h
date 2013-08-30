@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010 cocos2d-x.org
+Copyright (c) Microsoft Open Technologies, Inc.
 
 http://www.cocos2d-x.org
 
@@ -32,7 +33,13 @@ THE SOFTWARE.
 #include "CCFileUtils.h"
 #include "png.h"
 #include "jpeglib.h"
+
 #include "tiffio.h"
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+#include "CCFreeTypeFont.h"
+#endif
+
 #include <string>
 #include <ctype.h>
 
@@ -82,12 +89,17 @@ CCImage::CCImage()
 , m_bHasAlpha(false)
 , m_bPreMulti(false)
 {
-
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+    m_ft = nullptr;
+#endif
 }
 
 CCImage::~CCImage()
 {
     CC_SAFE_DELETE_ARRAY(m_pData);
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+    CC_SAFE_DELETE(m_ft);
+#endif
 }
 
 bool CCImage::initWithImageFile(const char * strPath, EImageFormat eImgFmt/* = eFmtPng*/)
@@ -141,14 +153,16 @@ bool CCImage::initWithImageData(void * pData,
         }
         else if (kFmtTiff == eFmt)
         {
-            bRet = _initWithTiffData(pData, nDataLen);
+           bRet = _initWithTiffData(pData, nDataLen);
             break;
         }
-        else if (kFmtWebp == eFmt)
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
+       else if (kFmtWebp == eFmt)
         {
             bRet = _initWithWebpData(pData, nDataLen);
             break;
         }
+#endif
         else if (kFmtRawData == eFmt)
         {
             bRet = _initWithRawData(pData, nDataLen, nWidth, nHeight, nBitsPerComponent);
@@ -174,6 +188,7 @@ bool CCImage::initWithImageData(void * pData,
                 }
             }
 
+
             // if it is a tiff file buffer.
             if (nDataLen > 2)
             {
@@ -186,7 +201,6 @@ bool CCImage::initWithImageData(void * pData,
                     break;
                 }
             }
-
             // if it is a jpeg file buffer.
             if (nDataLen > 2)
             {
@@ -204,39 +218,39 @@ bool CCImage::initWithImageData(void * pData,
 }
 
 /*
- * ERROR HANDLING:
- *
- * The JPEG library's standard error handler (jerror.c) is divided into
- * several "methods" which you can override individually.  This lets you
- * adjust the behavior without duplicating a lot of code, which you might
- * have to update with each future release.
- *
- * We override the "error_exit" method so that control is returned to the
- * library's caller when a fatal error occurs, rather than calling exit()
- * as the standard error_exit method does.
- *
- * We use C's setjmp/longjmp facility to return control.  This means that the
- * routine which calls the JPEG library must first execute a setjmp() call to
- * establish the return point.  We want the replacement error_exit to do a
- * longjmp().  But we need to make the setjmp buffer accessible to the
- * error_exit routine.  To do this, we make a private extension of the
- * standard JPEG error handler object.  (If we were using C++, we'd say we
- * were making a subclass of the regular error handler.)
- *
- * Here's the extended error handler struct:
- */
+* ERROR HANDLING:
+*
+* The JPEG library's standard error handler (jerror.c) is divided into
+* several "methods" which you can override individually.  This lets you
+* adjust the behavior without duplicating a lot of code, which you might
+* have to update with each future release.
+*
+* We override the "error_exit" method so that control is returned to the
+* library's caller when a fatal error occurs, rather than calling exit()
+* as the standard error_exit method does.
+*
+* We use C's setjmp/longjmp facility to return control.  This means that the
+* routine which calls the JPEG library must first execute a setjmp() call to
+* establish the return point.  We want the replacement error_exit to do a
+* longjmp().  But we need to make the setjmp buffer accessible to the
+* error_exit routine.  To do this, we make a private extension of the
+* standard JPEG error handler object.  (If we were using C++, we'd say we
+* were making a subclass of the regular error handler.)
+*
+* Here's the extended error handler struct:
+*/
 
 struct my_error_mgr {
-  struct jpeg_error_mgr pub;	/* "public" fields */
+  struct jpeg_error_mgr pub;     /* "public" fields */
 
-  jmp_buf setjmp_buffer;	/* for return to caller */
+  jmp_buf setjmp_buffer;   /* for return to caller */
 };
 
 typedef struct my_error_mgr * my_error_ptr;
 
 /*
- * Here's the routine that will replace the standard error_exit method:
- */
+* Here's the routine that will replace the standard error_exit method:
+*/
 
 METHODDEF(void)
 my_error_exit (j_common_ptr cinfo)
@@ -257,10 +271,10 @@ bool CCImage::_initWithJpgData(void * data, int nSize)
     /* these are standard libjpeg structures for reading(decompression) */
     struct jpeg_decompress_struct cinfo;
     /* We use our private extension JPEG error handler.
-	 * Note that this struct must live as long as the main JPEG parameter
-	 * struct, to avoid dangling-pointer problems.
-	 */
-	struct my_error_mgr jerr;
+       * Note that this struct must live as long as the main JPEG parameter
+       * struct, to avoid dangling-pointer problems.
+       */
+       struct my_error_mgr jerr;
     /* libjpeg data structure for storing one row, that is, scanline of an image */
     JSAMPROW row_pointer[1] = {0};
     unsigned long location = 0;
@@ -270,17 +284,17 @@ bool CCImage::_initWithJpgData(void * data, int nSize)
     do 
     {
         /* We set up the normal JPEG error routines, then override error_exit. */
-		cinfo.err = jpeg_std_error(&jerr.pub);
-		jerr.pub.error_exit = my_error_exit;
-		/* Establish the setjmp return context for my_error_exit to use. */
-		if (setjmp(jerr.setjmp_buffer)) {
-			/* If we get here, the JPEG code has signaled an error.
-			 * We need to clean up the JPEG object, close the input file, and return.
-			 */
-			CCLog("%d", bRet);
-			jpeg_destroy_decompress(&cinfo);
-			break;
-		}
+             cinfo.err = jpeg_std_error(&jerr.pub);
+             jerr.pub.error_exit = my_error_exit;
+             /* Establish the setjmp return context for my_error_exit to use. */
+             if (setjmp(jerr.setjmp_buffer)) {
+                    /* If we get here, the JPEG code has signaled an error.
+                    * We need to clean up the JPEG object, close the input file, and return.
+                    */
+                    CCLog("%d", bRet);
+                    jpeg_destroy_decompress(&cinfo);
+                    break;
+             }
 
         /* setup decompression process and source, then read JPEG header */
         jpeg_create_decompress( &cinfo );
@@ -290,7 +304,7 @@ bool CCImage::_initWithJpgData(void * data, int nSize)
         /* reading the image header which contains image information */
         jpeg_read_header( &cinfo, true );
 
-        // we only support RGB or grayscale
+       // we only support RGB or grayscale
         if (cinfo.jpeg_color_space != JCS_RGB)
         {
             if (cinfo.jpeg_color_space == JCS_GRAYSCALE || cinfo.jpeg_color_space == JCS_YCbCr)
@@ -329,12 +343,12 @@ bool CCImage::_initWithJpgData(void * data, int nSize)
             }
         }
 
-		/* When read image file with broken data, jpeg_finish_decompress() may cause error.
-		 * Besides, jpeg_destroy_decompress() shall deallocate and release all memory associated
-		 * with the decompression object.
-		 * So it doesn't need to call jpeg_finish_decompress().
-		 */
-		//jpeg_finish_decompress( &cinfo );
+             /* When read image file with broken data, jpeg_finish_decompress() may cause error.
+             * Besides, jpeg_destroy_decompress() shall deallocate and release all memory associated
+             * with the decompression object.
+             * So it doesn't need to call jpeg_finish_decompress().
+             */
+             //jpeg_finish_decompress( &cinfo );
         jpeg_destroy_decompress( &cinfo );
         /* wrap up decompression, destroy objects, free pointers and close open files */        
         bRet = true;
@@ -469,6 +483,7 @@ bool CCImage::_initWithPngData(void * pData, int nDatalen)
     }
     return bRet;
 }
+
 
 static tmsize_t _tiffReadProc(thandle_t fd, void* buf, tmsize_t size)
 {
@@ -647,6 +662,7 @@ bool CCImage::_initWithTiffData(void* pData, int nDataLen)
     return bRet;
 }
 
+
 bool CCImage::_initWithRawData(void * pData, int nDatalen, int nWidth, int nHeight, int nBitsPerComponent)
 {
     bool bRet = false;
@@ -690,7 +706,7 @@ bool CCImage::saveToFile(const char *pszFilePath, bool bIsToRGB)
 
         if (std::string::npos != strLowerCasePath.find(".png"))
         {
-            CC_BREAK_IF(!_saveImageToPNG(pszFilePath, bIsToRGB));
+           CC_BREAK_IF(!_saveImageToPNG(pszFilePath, bIsToRGB));
         }
         else if (std::string::npos != strLowerCasePath.find(".jpg"))
         {
@@ -926,4 +942,5 @@ bool CCImage::_saveImageToJPG(const char * pszFilePath)
 }
 
 NS_CC_END
+
 

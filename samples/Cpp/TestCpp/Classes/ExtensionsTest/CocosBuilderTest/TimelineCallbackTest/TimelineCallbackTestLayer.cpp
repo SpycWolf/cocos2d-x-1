@@ -11,7 +11,9 @@ TimelineCallbackTestLayer::TimelineCallbackTestLayer()
 TimelineCallbackTestLayer::~TimelineCallbackTestLayer()
 {
     CC_SAFE_RELEASE(_helloLabel);
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
     CocosDenshion::SimpleAudioEngine::end();
+#endif
 }
 
 SEL_MenuHandler TimelineCallbackTestLayer::onResolveCCBCCMenuItemSelector(CCObject * pTarget, const char * pSelectorName) {

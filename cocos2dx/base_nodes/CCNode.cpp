@@ -3,6 +3,7 @@ Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2009      Valentin Milea
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) Microsoft Open Technologies, Inc.
 
 http://www.cocos2d-x.org
 
@@ -35,7 +36,7 @@ THE SOFTWARE.
 #include "touch_dispatcher/CCTouch.h"
 #include "actions/CCActionManager.h"
 #include "script_support/CCScriptSupport.h"
-#include "shaders/CCGLProgram.h"
+
 // externals
 #include "kazmath/GL/matrix.h"
 

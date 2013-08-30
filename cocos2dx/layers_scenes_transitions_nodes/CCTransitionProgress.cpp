@@ -139,7 +139,6 @@ CCProgressTimer* CCTransitionProgressRadialCCW::progressTimerNodeWithRenderTextu
 
     CCProgressTimer* pNode = CCProgressTimer::create(texture->getSprite());
 
-    // but it is flipped upside down so we flip the sprite
     pNode->getSprite()->setFlipY(true);
     pNode->setType(kCCProgressTimerTypeRadial);
 

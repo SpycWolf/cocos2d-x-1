@@ -23,6 +23,10 @@
 /// Chipmunk's axis-aligned 2D bounding box type along with a few handy routines.
 /// @{
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+#pragma warning(disable:4056)
+#endif
+
 /// Chipmunk's axis-aligned 2D bounding box type. (left, bottom, right, top)
 typedef struct cpBB{
 	cpFloat l, b, r ,t;
@@ -132,5 +136,9 @@ cpBBClampVect(const cpBB bb, const cpVect v)
 // TODO edge case issue
 /// Wrap a vector to a bounding box.
 cpVect cpBBWrapVect(const cpBB bb, const cpVect v); // wrap a vector to a bbox
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+#pragma warning(default:4056)   // 4056 reenabled
+#endif
 
 ///@}

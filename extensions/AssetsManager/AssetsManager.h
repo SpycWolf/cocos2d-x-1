@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
- 
+ Copyright (c) Microsoft Open Technologies, Inc.
+
  http://www.cocos2d-x.org
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,10 +26,13 @@
 #ifndef __AssetsManager__
 #define __AssetsManager__
 
+
 #include <string>
+#include "cocos2d.h"
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
+
 #include <curl/curl.h>
 
-#include "cocos2d.h"
 #include "ExtensionMacros.h"
 
 NS_CC_EXT_BEGIN
@@ -135,3 +139,5 @@ private:
 NS_CC_EXT_END;
 
 #endif /* defined(__AssetsManager__) */
+
+#endif /* #if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) */

@@ -1,0 +1,49 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcocos2d", "cocos2d.vcxproj", "{12155DB2-C528-4C56-8292-5E87FC315769}"
+	ProjectSection(ProjectDependencies) = postProject
+		{44A99352-D801-406E-A06D-CC0C1225048D} = {44A99352-D801-406E-A06D-CC0C1225048D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gl2dx", "..\platform\third_party\winrt\gl2dx\gl2dx\gl2dx.vcxproj", "{44A99352-D801-406E-A06D-CC0C1225048D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|ARM = Release|ARM
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Debug|ARM.ActiveCfg = Debug|ARM
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Debug|ARM.Build.0 = Debug|ARM
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Debug|Win32.ActiveCfg = Debug|Win32
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Debug|Win32.Build.0 = Debug|Win32
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Debug|x64.ActiveCfg = Debug|x64
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Debug|x64.Build.0 = Debug|x64
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Release|ARM.ActiveCfg = Release|ARM
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Release|ARM.Build.0 = Release|ARM
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Release|Win32.ActiveCfg = Release|Win32
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Release|Win32.Build.0 = Release|Win32
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Release|x64.ActiveCfg = Release|x64
+		{12155DB2-C528-4C56-8292-5E87FC315769}.Release|x64.Build.0 = Release|x64
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Debug|ARM.ActiveCfg = Debug|ARM
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Debug|ARM.Build.0 = Debug|ARM
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Debug|Win32.Build.0 = Debug|Win32
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Debug|x64.ActiveCfg = Debug|x64
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Debug|x64.Build.0 = Debug|x64
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Release|ARM.ActiveCfg = Release|ARM
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Release|ARM.Build.0 = Release|ARM
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Release|Win32.ActiveCfg = Release|Win32
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Release|Win32.Build.0 = Release|Win32
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Release|x64.ActiveCfg = Release|x64
+		{44A99352-D801-406E-A06D-CC0C1225048D}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

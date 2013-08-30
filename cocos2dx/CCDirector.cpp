@@ -2,6 +2,7 @@
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) Microsoft Open Technologies, Inc.
 
 http://www.cocos2d-x.org
 
@@ -305,7 +306,9 @@ void CCDirector::setOpenGLView(CCEGLView *pobOpenGLView)
     if (m_pobOpenGLView != pobOpenGLView)
     {
         // EAGLView is not a CCObject
-        delete m_pobOpenGLView; // [openGLView_ release]
+		if(m_pobOpenGLView) {
+			delete m_pobOpenGLView; // [openGLView_ release]
+		}
         m_pobOpenGLView = pobOpenGLView;
 
         // set size
@@ -368,7 +371,7 @@ void CCDirector::setProjection(ccDirectorProjection kProjection)
             kmGLLoadIdentity();
 
             // issue #1334
-            kmMat4PerspectiveProjection( &matrixPerspective, 60, (GLfloat)size.width/size.height, 0.1f, zeye*2);
+            kmMat4PerspectiveProjection( &matrixPerspective, 60, (GLfloat)size.width/(GLfloat)size.height, 0.1f, zeye*2);
             // kmMat4PerspectiveProjection( &matrixPerspective, 60, (GLfloat)size.width/size.height, 0.1f, 1500);
 
             kmGLMultMatrix(&matrixPerspective);

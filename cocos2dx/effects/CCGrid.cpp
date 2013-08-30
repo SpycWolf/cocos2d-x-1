@@ -1,7 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2009      On-Core
-
+Copyright (c) Microsoft Open Technologies, Inc.
 http://www.cocos2d-x.org
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -114,9 +114,13 @@ bool CCGridBase::initWithSize(const CCSize& gridSize)
     CCDirector *pDirector = CCDirector::sharedDirector();
     CCSize s = pDirector->getWinSizeInPixels();
     
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+    unsigned long POTWide = s.width;
+    unsigned long POTHigh = s.height;
+#else
     unsigned long POTWide = ccNextPOT((unsigned int)s.width);
     unsigned long POTHigh = ccNextPOT((unsigned int)s.height);
-
+#endif
     // we only use rgba8888
     CCTexture2DPixelFormat format = kCCTexture2DPixelFormat_RGBA8888;
 
@@ -179,9 +183,12 @@ void CCGridBase::setTextureFlipped(bool bFlipped)
 void CCGridBase::set2DProjection()
 {
     CCDirector *director = CCDirector::sharedDirector();
-
-    CCSize    size = director->getWinSizeInPixels();
-
+    CCSize size;
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+    size = director->getWinSize();
+#else
+    size = director->getWinSizeInPixels();
+#endif
     glViewport(0, 0, (GLsizei)(size.width * CC_CONTENT_SCALE_FACTOR()), (GLsizei)(size.height * CC_CONTENT_SCALE_FACTOR()) );
     kmGLMatrixMode(KM_GL_PROJECTION);
     kmGLLoadIdentity();

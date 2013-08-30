@@ -1,7 +1,8 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2012 greathqy
- 
+ Copyright (c) Microsoft Open Technologies, Inc.
+
  http://www.cocos2d-x.org
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,6 +30,8 @@
 #include <queue>
 #include <pthread.h>
 #include <errno.h>
+
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
 
 #include "curl/curl.h"
 
@@ -498,4 +501,4 @@ void CCHttpClient::dispatchResponseCallbacks(float delta)
 
 NS_CC_EXT_END
 
-
+#endif /* #if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) */

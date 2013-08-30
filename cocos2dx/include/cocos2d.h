@@ -2,6 +2,7 @@
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2011      Zynga Inc.
+Copyright (c) Microsoft Open Technologies, Inc.
 
 http://www.cocos2d-x.org
 
@@ -165,6 +166,22 @@ THE SOFTWARE.
 	#include "platform/win32/CCStdC.h"
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+	#include "platform/winrt/CCApplication.h"
+	#include "platform/winrt/CCEGLView.h"
+	#include "platform/winrt/CCGL.h"
+	#include "platform/winrt/CCStdC.h"
+	#include "platform/winrt/CCAccelerometer.h"
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+	#include "platform/winrt/CCApplication.h"
+	#include "platform/wp8/CCEGLView.h"
+	#include "platform/winrt/CCGL.h"
+	#include "platform/winrt/CCStdC.h"
+	#include "platform/winrt/CCAccelerometer.h"
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_WP8
+
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 	#include "platform/mac/CCAccelerometer.h"
 	#include "platform/mac/CCApplication.h"
@@ -172,6 +189,10 @@ THE SOFTWARE.
 	#include "platform/mac/CCGL.h"
 	#include "platform/mac/CCStdC.h"
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+
+
+
+
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 	#include "platform/linux/CCAccelerometer.h"
@@ -203,11 +224,18 @@ THE SOFTWARE.
 #include "script_support/CCScriptSupport.h"
 
 // shaders
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+// TODO: fix shaders
+#include "platform/winrt/shaders/CCGLProgramDX.h"
+#include "platform/winrt/shaders/ccGLStateCache.h"
+#include "platform/winrt/shaders/CCShaderCache.h"
+#include "platform/winrt/shaders/ccShaders.h"
+#else
 #include "shaders/CCGLProgram.h"
 #include "shaders/ccGLStateCache.h"
 #include "shaders/CCShaderCache.h"
 #include "shaders/ccShaders.h"
-
+#endif
 // sprite_nodes
 #include "sprite_nodes/CCAnimation.h"
 #include "sprite_nodes/CCAnimationCache.h"

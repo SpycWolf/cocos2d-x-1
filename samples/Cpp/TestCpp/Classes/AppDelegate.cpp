@@ -1,3 +1,27 @@
+/****************************************************************************
+Copyright (c) 2010-2013 cocos2d-x.org
+Copyright (c) Microsoft Open Technologies, Inc.
+
+http://www.cocos2d-x.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+****************************************************************************/
 #include "AppDelegate.h"
 
 #include "cocos2d.h"
@@ -25,18 +49,23 @@ bool AppDelegate::applicationDidFinishLaunching()
     CCSize screenSize = CCEGLView::sharedOpenGLView()->getFrameSize();
 
     CCSize designSize = CCSizeMake(480, 320);
+
     CCFileUtils* pFileUtils = CCFileUtils::sharedFileUtils();
     
-    if (screenSize.height > 320)
-    {
-        CCSize resourceSize = CCSizeMake(960, 640);
-        std::vector<std::string> searchPaths;
-        searchPaths.push_back("hd");
-        pFileUtils->setSearchPaths(searchPaths);
-        pDirector->setContentScaleFactor(resourceSize.height/designSize.height);
-    }
 
-    CCEGLView::sharedOpenGLView()->setDesignResolutionSize(designSize.width, designSize.height, kResolutionNoBorder);
+	if (screenSize.height > 320)
+	{
+		CCSize resourceSize = CCSizeMake(960, 640);
+		std::vector<std::string> searchPaths;
+		searchPaths.push_back("hd");
+		pFileUtils->setSearchPaths(searchPaths);
+		pDirector->setContentScaleFactor(resourceSize.height/designSize.height);
+	}  
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+    CCEGLView::sharedOpenGLView()->setDesignResolutionSize(designSize.width, designSize.height, kResolutionShowAll);
+#else
+	CCEGLView::sharedOpenGLView()->setDesignResolutionSize(designSize.width, designSize.height, kResolutionNoBorder);
+#endif
 
     // turn on display FPS
     pDirector->setDisplayStats(true);
@@ -58,14 +87,19 @@ bool AppDelegate::applicationDidFinishLaunching()
 void AppDelegate::applicationDidEnterBackground()
 {
     CCDirector::sharedDirector()->stopAnimation();
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
     SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
     SimpleAudioEngine::sharedEngine()->pauseAllEffects();
+#endif
 }
 
 // this function will be called when the app is active again
 void AppDelegate::applicationWillEnterForeground()
 {
     CCDirector::sharedDirector()->startAnimation();
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
     SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
     SimpleAudioEngine::sharedEngine()->resumeAllEffects();
+#endif
+
 }

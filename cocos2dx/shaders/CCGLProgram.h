@@ -3,6 +3,7 @@ Copyright 2012 cocos2d-x.org
 Copyright 2011 Jeff Lamarche
 Copyright 2012 Goffredo Marocchi
 Copyright 2012 Ricardo Quesada
+Copyright (c) Microsoft Open Technologies, Inc.
 
 http://www.cocos2d-x.org
  
@@ -28,6 +29,9 @@ THE SOFTWARE.
 #ifndef __CCGLPROGRAM_H__
 #define __CCGLPROGRAM_H__
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+#include "shaders/CCGLProgramDX.h"
+#else
 #include "ccMacros.h"
 #include "cocoa/CCObject.h"
 
@@ -207,5 +211,7 @@ private:
 /// @}
 
 NS_CC_END
+
+#endif // #idef CC_PLATFORM_WINRT"
 
 #endif /* __CCGLPROGRAM_H__ */

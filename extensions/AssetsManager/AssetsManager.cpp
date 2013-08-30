@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
- 
+ Copyright (c) Microsoft Open Technologies, Inc.
+
  http://www.cocos2d-x.org
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,12 +26,16 @@
 #include "AssetsManager.h"
 #include "cocos2d.h"
 
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
+
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <stdio.h>
 #include <vector>
 
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32)
+
+
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32) && (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -430,3 +435,5 @@ void AssetsManager::deleteVersion()
 }
 
 NS_CC_EXT_END;
+
+#endif /* #if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) */

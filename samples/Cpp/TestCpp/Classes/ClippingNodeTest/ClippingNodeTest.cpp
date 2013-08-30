@@ -681,7 +681,11 @@ void RawStencilBufferTest::setupStencilForClippingOnPlane(GLint plane)
     GLint planeMask = 0x1 << plane;
     glStencilMask(planeMask);
     glClearStencil(0x0);
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+
+#else
     glClear(GL_STENCIL_BUFFER_BIT);
+#endif
     glFlush();
     glStencilFunc(GL_NEVER, planeMask, planeMask);
     glStencilOp(GL_REPLACE, GL_KEEP, GL_KEEP);

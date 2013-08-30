@@ -533,8 +533,10 @@ void CCTextureAtlas::moveQuadsFromIndex(unsigned int oldIndex, unsigned int amou
     }
     //create buffer
     size_t quadSize = sizeof(ccV3F_C4B_T2F_Quad);
-    ccV3F_C4B_T2F_Quad* tempQuads = (ccV3F_C4B_T2F_Quad*)malloc( quadSize * amount);
-    memcpy( tempQuads, &m_pQuads[oldIndex], quadSize * amount );
+
+    size_t numbytes = quadSize * amount;
+    ccV3F_C4B_T2F_Quad* tempQuads = (ccV3F_C4B_T2F_Quad*) malloc(numbytes);
+    memcpy(tempQuads, &m_pQuads[oldIndex], numbytes);
 
     if (newIndex < oldIndex)
     {

@@ -52,9 +52,6 @@
     <Filter Include="support\zip_support">
       <UniqueIdentifier>{fdea327e-b905-47db-8c33-b70d7866166b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="textures">
-      <UniqueIdentifier>{46c8d130-b8b5-47f5-a063-ca700e1c32cc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="tilemap_parallax_nodes">
       <UniqueIdentifier>{f2671200-b2d8-4d2e-9728-06719cf6f835}</UniqueIdentifier>
     </Filter>
@@ -99,6 +96,9 @@
     </Filter>
     <Filter Include="support\user_default">
       <UniqueIdentifier>{c45b97e8-fa1f-4e58-8ec5-d46371c2dd26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="text_input_node\textures">
+      <UniqueIdentifier>{46c8d130-b8b5-47f5-a063-ca700e1c32cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -319,16 +319,16 @@
       <Filter>support\zip_support</Filter>
     </ClCompile>
     <ClCompile Include="..\textures\CCTexture2D.cpp">
-      <Filter>textures</Filter>
+      <Filter>text_input_node\textures</Filter>
     </ClCompile>
     <ClCompile Include="..\textures\CCTextureAtlas.cpp">
-      <Filter>textures</Filter>
+      <Filter>text_input_node\textures</Filter>
     </ClCompile>
     <ClCompile Include="..\textures\CCTextureCache.cpp">
-      <Filter>textures</Filter>
+      <Filter>text_input_node\textures</Filter>
     </ClCompile>
     <ClCompile Include="..\textures\CCTexturePVR.cpp">
-      <Filter>textures</Filter>
+      <Filter>text_input_node\textures</Filter>
     </ClCompile>
     <ClCompile Include="..\tileMap_parallax_nodes\CCParallaxNode.cpp">
       <Filter>tilemap_parallax_nodes</Filter>
@@ -728,16 +728,16 @@
       <Filter>support\zip_support</Filter>
     </ClInclude>
     <ClInclude Include="..\textures\CCTexture2D.h">
-      <Filter>textures</Filter>
+      <Filter>text_input_node\textures</Filter>
     </ClInclude>
     <ClInclude Include="..\textures\CCTextureAtlas.h">
-      <Filter>textures</Filter>
+      <Filter>text_input_node\textures</Filter>
     </ClInclude>
     <ClInclude Include="..\textures\CCTextureCache.h">
-      <Filter>textures</Filter>
+      <Filter>text_input_node\textures</Filter>
     </ClInclude>
     <ClInclude Include="..\textures\CCTexturePVR.h">
-      <Filter>textures</Filter>
+      <Filter>text_input_node\textures</Filter>
     </ClInclude>
     <ClInclude Include="..\tileMap_parallax_nodes\CCParallaxNode.h">
       <Filter>tilemap_parallax_nodes</Filter>

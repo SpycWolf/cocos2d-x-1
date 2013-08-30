@@ -5,6 +5,8 @@
  * Copyright 2012 Yannick Loriot. All rights reserved.
  * http://yannickloriot.com
  * 
+ * Copyright (c) Microsoft Open Technologies, Inc.
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -118,7 +120,11 @@ bool CCControlSwitchSprite::initWithMaskSprite(
         // Set up the mask with the Mask shader
         setMaskTexture(maskSprite->getTexture());
         CCGLProgram* pProgram = new CCGLProgram();
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+		pProgram->initWithVertexShaderByteArray(ccPositionTextureColor_vert, ccShaderEx_SwitchMask_frag,sizeof(ccPositionTextureColor_vert),sizeof(ccShaderEx_SwitchMask_frag));
+#else
         pProgram->initWithVertexShaderByteArray(ccPositionTextureColor_vert, ccExSwitchMask_frag);
+#endif
         setShaderProgram(pProgram);
         pProgram->release();
 
@@ -135,6 +141,10 @@ bool CCControlSwitchSprite::initWithMaskSprite(
         getShaderProgram()->updateUniforms();
         CHECK_GL_ERROR_DEBUG();                
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+        glRegisterUniformSamplerLocation(getShaderProgram()->getProgram(),10,"u_mask");
+        glRegisterUniformSamplerLocation(getShaderProgram()->getProgram(),11,"u_texture");
+#endif
         m_uTextureLocation    = glGetUniformLocation( getShaderProgram()->getProgram(), "u_texture");
         m_uMaskLocation       = glGetUniformLocation( getShaderProgram()->getProgram(), "u_mask");
         CHECK_GL_ERROR_DEBUG();
